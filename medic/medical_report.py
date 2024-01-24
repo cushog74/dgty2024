@@ -1,21 +1,27 @@
 import pandas as pd
 
-def find_patient_record(last_name, date):
-    data = pd.read_csv('patient_data.csv')
-    filtered_data = data[(data['Фамилия'] == last_name) & (data['Дата об-ращения'] == date)]
-    if filtered_data.empty:
-        return "Записи с таким именем и датой об-ращения не найдено."
-    else:
-        return filtered_data.to_string()
+def find_patient_by_surname_and_date(surname, date):
+    data = pd.read_csv("patient_data.csv")
+    filtered_data = data[(data["Фамилия"] == surname) & (data["Дата об-ращения"] == date)]
+    return filtered_data
 
-def build_birth_year_table():
-    data = pd.read_csv('patient_data.csv')
-    birth_years = data['Дата об-ращения'].apply(lambda x: x.split('-')[0])
-    birth_year_count = birth_years.value_counts().sort_index()
-    return birth_year_count.to_string()
+def build_yearly_disease_table(data):
+    data["Дата об-ращения"] = pd.to_datetime(data["Дата об-ращения"]).dt.year
+    yearly_disease_counts = data.groupby("Дата об-ращения").size()
+    yearly_disease_counts.index = yearly_disease_counts.index.astype(str)
+    return yearly_disease_counts
 
-if __name__ == '__main__':
-    last_name = input("Введите фамилию пациента: ")
+def main():
+    surname = input("Введите фамилию пациента: ")
     date = input("Введите дату об-ращения: ")
-    print(find_patient_record(last_name, date))
-    print(build_birth_year_table())
+    patient_record = find_patient_by_surname_and_date(surname, date)
+
+    if not patient_record.empty:
+        yearly_disease_counts = build_yearly_disease_counts(patient_record)
+        print("Число заболевших по дате рождения:")
+        print(yearly_disease_counts)
+    else:
+        print("Записи с таким именем и датой об-ращения не найдены.")
+
+if __name__ == "__main__":
+    main()
