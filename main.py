@@ -19,3 +19,20 @@ if __name__ == "__main__":
 
     sick_count_table = generate_sick_count_table()
     print("Таблица числа заболевших по дате рождения:\n", sick_count_table)
+
+df = pd.read_csv('patients_data.csv')
+
+def find_patient_record(last_name, date_of_visit):
+    # Фильтрация данных по фамилии и дате обращения
+    result = df[(df['ФИО'].str.contains(last_name, case=False)) & (df['Дата обращения'] == date_of_visit)]
+
+    if not result.empty:
+        print(result[['ФИО', 'Дата рождения', 'Возраст', 'Дата обращения', 'Причина обращения']])
+    else:
+        print("Запись не найдена.")
+
+
+last_name_input = input("Введите фамилию пациента: ")
+date_of_visit_input = input("Введите дату обращения (гггг-мм-дд): ")
+
+find_patient_record(last_name_input, date_of_visit_input)
