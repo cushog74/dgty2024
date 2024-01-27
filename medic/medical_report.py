@@ -1,37 +1,19 @@
-import csv
-def search_record(surname, date):
-    with open('patients.csv', 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            if row[0] == surname and row[3] == date:
-                return row
-        return None
-def print_sick_leave(record):
-    if record:
-        print("Больничный лист:")
-        print(f"Фамилия И.О. пациента: {record[0]}")
-        print(f"Пол: {record[1]}")
-        print(f"Возраст: {record[2]}")
-        print(f"Дата обращения: {record[3]}")
-        print(f"Причина обращения в медпункт: {record[4]}")
-    else:
-        print("Запись не найдена")
-def build_birthdate_table():
-    birthdates = {}
-    with open('patients.csv', 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            year = row[2].split('.')[-1]
-            if year in birthdates:
-                birthdates[year] += 1
-            else:
-                birthdates[year] = 1
-    print("Таблица числа заболевших по дате рождения:")
-    for year, count in birthdates.items():
-        print(f"Год рождения: {year}, Количество заболевших: {count}")
+import pandas as pd
 
+data = pd.read_csv("patients.csv", delimiter=";")
 
-record = search_record('Абрамович', '01.01.2022')
-print_sick_leave(record)
+surname = input("Введите фамилию пациента: ")
+date = input("Введите дату обращения (в формате дд.мм.гггг): ")
+filtered_data = data[(data["Фамилия И.О."] == surname) & (data["Дата обращения"] == date)]
 
-build_birthdate_table()
+if len(filtered_data) > 0:
+    print("Больничный лист:")
+    print(filtered_data)
+else:
+    print("Запись не найдена")
+
+birth_dates = pd.to_datetime(data["Дата обращения"]).dt.year
+count_by_year = birth_dates.value_counts().sort_index()
+table = pd.DataFrame(count_by_year, columns=["Число заболевших"])
+print("Таблица числа заболевших по дате рождения:")
+print(table)
