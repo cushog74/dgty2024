@@ -23,7 +23,6 @@ if __name__ == "__main__":
 df = pd.read_csv('patients_data.csv')
 
 def find_patient_record(last_name, date_of_visit):
-    # Фильтрация данных по фамилии и дате обращения
     result = df[(df['ФИО'].str.contains(last_name, case=False)) & (df['Дата обращения'] == date_of_visit)]
 
     if not result.empty:
